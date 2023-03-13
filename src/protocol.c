@@ -273,6 +273,12 @@ int callback_tty(struct lws *wsi, enum lws_callback_reasons reason, void *user, 
       }
 
       if (pss->pty_buf != NULL) {
+        printf("linux terminal return is:");
+        for (int i = 0; i < pss->pty_buf->len; ++i) {
+          printf("%c", *(pss->pty_buf->base + i));
+        }
+        printf("\n");
+
         wsi_output(wsi, pss->pty_buf);
         pty_buf_free(pss->pty_buf);
         pss->pty_buf = NULL;
@@ -307,6 +313,11 @@ int callback_tty(struct lws *wsi, enum lws_callback_reasons reason, void *user, 
       switch (command) {
         case INPUT:
           if (server->readonly) break;
+          printf("user type cmd is:");
+          for (int i = 0; i < pss->len; ++i) {
+            printf("%c", *(pss->buffer + i));
+          }
+          printf("\n");
           int err = pty_write(pss->process, pty_buf_init(pss->buffer + 1, pss->len - 1));
           if (err) {
             lwsl_err("uv_write: %s (%s)\n", uv_err_name(err), uv_strerror(err));
